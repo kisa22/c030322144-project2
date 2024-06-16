@@ -1,69 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Data Products - Poliban</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Ayeges Store</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body style="background: lightgray">
 
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-12">
-                <div>
-                    <h3 class="text-center my-4">Praktikum Pemprograman Web</h3>
-                    <h5 class="text-center"><a href="https://poliban.ac.id">www.poliban.ac.id</a></h5>
-                    <hr>
-                </div>
-                <div class="card border-0 shadow-sm rounded">
-                    <div class="card-body">
-                        <a href="{{ route('products.create') }}" class="btn btn-md btn-success mb-3">ADD PRODUCT</a>
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th scope="col">IMAGE</th>
-                                    <th scope="col">TITLE</th>
-                                    <th scope="col">PRICE</th>
-                                    <th scope="col">STOCK</th>
-                                    <th scope="col" style="width: 20%">ACTIONS</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($products as $product)
-                                    <tr>
-                                        <td class="text-center">
-                                            <img src="{{ asset('/storage/products/'.$product->image) }}" class="rounded" style="width: 150px">
-                                        </td>
-                                        <td>{{ $product->title }}</td>
-                                        <td>{{ "Rp " . number_format($product->price,2,',','.') }}</td>
-                                        <td>{{ $product->stock }}</td>
-                                        <td class="text-center">
-                                            <form onsubmit="return confirm('Apakah Anda Yakin ?');" action="{{ route('products.destroy', $product->id) }}" method="POST">
-                                                <a href="{{ route('products.show', $product->id) }}" class="btn btn-se btn-dark">SHOW</a>
-                                                <a href="{{ route('products.edit', $product->id) }}" class="btn btn-se btn-primary">EDIT</a>
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger">HAPUS</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <div class="alert alert-danger">
-                                        Data Products belum Tersedia.
-                                    </div>                                        
-                                @endforelse
-                            </tbody>
-                        </table>
-                        {{ $products->links() }}
+<body class="bg-gray-100">
+    <x-navbar1></x-navbar1>
+    <!-- Product -->
+    <main class="container px-6 py-24 mx-auto mt-24">
+        <h1 class="mb-8 text-3xl font-bold text-center">Products</h1>
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" id="product-list">
+            @if($products->isEmpty())
+                <p class="text-center text-gray-500">No products available</p>
+            @else
+                @foreach ($products as $product)
+                    <div class="p-4 bg-white rounded-lg shadow-md product-card">
+                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->title }}"
+                            class="object-cover w-full h-48 rounded-t-lg">
+                        <div class="p-4">
+                            <p class="font-bold">{{ $product->title }}</p>
+                            <p class="text-gray-600">Rp{{ number_format($product->price, 0, ',', '.') }}</p>
+                        </div>
                     </div>
-                </div>
-            </div>
+                @endforeach
+            @endif
         </div>
-    </div>
+        <!-- Pagination Links -->
+        <div class="mt-6">
+            {{ $products->links('vendor.pagination.tailwind') }}
+        </div>
+    </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#search').on('keyup', function () {
+                var query = $(this).val();
+                $.ajax({
+                    url: "{{ route('products.search') }}",
+                    type: "GET",
+                    data: { query: query },
+                    success: function (data) {
+                        var productHtml = '';
+                        if (data.length === 0) {
+                            productHtml += '<p class="text-center text-gray-500">No products available</p>';
+                        } else {
+                            $.each(data, function (index, product) {
+                                productHtml += '<div class="p-4 bg-white rounded-lg shadow-md product-card">';
+                                productHtml += '<img src="{{ asset("storage") }}/' + product.image + '" alt="' + product.title + '" class="object-cover w-full h-48 rounded-t-lg">';
+                                productHtml += '<div class="p-4">';
+                                productHtml += '<p class="font-bold">' + product.title + '</p>';
+                                productHtml += '<p class="text-gray-600">Rp' + parseFloat(product.price).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + '</p>';
+                                productHtml += '</div>';
+                                productHtml += '</div>';
+                            });
+                        }
+                        $('#product-list').html(productHtml);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
+
 </html>

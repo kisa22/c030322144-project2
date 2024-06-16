@@ -1,11 +1,12 @@
 <?php
 
-use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Auth\Middleware\Authenticate;
+use App\Http\Controllers\Api\PostController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware(Authenticate::using('sanctum'));
 
-Route::apiResource('/post', App\Http\Controllers\Api\PostController::class);
+Route::apiResource('posts', PostController::class);

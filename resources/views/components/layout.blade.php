@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" class="!scroll-smooth">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toko Bunga</title>
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+
+<body>
+  <!-- navbar -->
+  <x-navbar></x-navbar>
+  <!-- navbar -->
+  <main>
+    {{ $slot }}
+  </main>
+
+  <!-- footer -->
+  <x-footer></x-footer>
+  <!-- footer -->
+</body>
+
+</html>

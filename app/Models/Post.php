@@ -19,9 +19,10 @@ class Post extends Model
 
 
 
-    protected function image(): attribute{
+    protected function image(): attribute
+    {
         return attribute::make(
-            get: fn ($image) => url('/storage/posts/' . $image),
+            get: fn($image) => url('/storage/posts/' . $image),
         );
     }
 }
